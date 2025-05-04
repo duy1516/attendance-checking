@@ -18,6 +18,7 @@ export const classes = pgTable("classes", {
   teacherId: uuid("teacher_id").notNull().references(() => users.id), // Must be a teacher
   className: text("class_name").notNull(),
   classLink: text("class_link"),
+  description: text("description"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

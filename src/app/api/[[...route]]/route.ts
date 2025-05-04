@@ -18,3 +18,5 @@ app.get('/:wild', (c) => {
 })
 
 export const GET = handle(app)
+
+//This is just a test file to check if the Hono server is working properly on Vercel. It can be deleted later.
