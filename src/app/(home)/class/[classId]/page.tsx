@@ -3,15 +3,14 @@ import { classes } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 
-type Props = {
-  params: {
+interface PageProps {
+  params: Promise<{
     classId: string;
-  };
-};
+  }>;
+}
 
-export default async function ClassPage(props: Props) {
-  const { params } = await Promise.resolve(props);
-  const classId = params.classId;
+const Page = async ({ params }: PageProps) => {
+  const { classId } = await params;
 
   // Fetch the class from DB
   const result = await db
@@ -24,11 +23,15 @@ export default async function ClassPage(props: Props) {
   if (!classItem) return notFound();
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold">{classItem.className}</h1>
-      <p className="mt-2 text-gray-600">{classItem.description}</p>
-      <p className="mt-4 text-sm text-gray-500">Class Link: {classItem.classLink}</p>
+    <div className="p-4 flex justify-between">
+      <div>
+        <h1 className="text-3xl font-bold">{classItem.className}</h1>
+        <p className="text-sm mt-1 text-gray-500">{classItem.description}</p>
+      </div>
+      <p className="mx-4 text-sm text-gray-500">Class Code: {classItem.classLink}</p>
     </div>
   );
-}
+};
+
+export default Page;
 

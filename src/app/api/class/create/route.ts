@@ -1,4 +1,3 @@
-// app/api/class/create/route.ts
 import { handle } from "hono/vercel";
 import { Hono } from "hono";
 import { db } from "@/db";
