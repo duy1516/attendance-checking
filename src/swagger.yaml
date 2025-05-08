@@ -1,0 +1,133 @@
+openapi: 3.0.0
+info:
+  title: Student Attendance API
+  version: 1.0.0
+  description: API for managing classes and student attendance with face recognition
+paths:
+  /create:
+    post:
+      summary: Create a new class
+      tags:
+        - Class
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Mathematics
+                description:
+                  type: string
+                  example: Mathematics course
+              required:
+                - name
+      responses:
+        '201':
+          description: Class created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  classId:
+                    type: string
+                  name:
+                    type: string
+                  code:
+                    type: string
+        '400':
+          description: Error creating class
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+  /join:
+    post:
+      summary: Join a class using class code
+      tags:
+        - Class
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                classCode:
+                  type: string
+                  example: c9ca57f9
+                studentId:
+                  type: string
+                  example: 11111111-1111-1111-1111-111111111112
+              required:
+                - classCode
+                - studentId
+      responses:
+        '200':
+          description: Successfully joined class
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Joined successfully
+        '404':
+          description: Class not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Class not found
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: You already joined this class
+  /list:
+    get:
+      summary: List all classes
+      tags:
+        - Class
+      responses:
+        '200':
+          description: List of classes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  classes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        classId:
+                          type: string
+                          example: 0fdb2906-1d6a-4263-9731-59f64d0e5a20
+                        name:
+                          type: string
+                          example: Math 101
+                        code:
+                          type: string
+                          example: c9ca57f9
+components:
+  schemas: {}

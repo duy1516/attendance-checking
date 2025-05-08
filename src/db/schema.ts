@@ -1,4 +1,3 @@
-// db/schema.ts
 import { pgTable, uuid, text, timestamp } from "drizzle-orm/pg-core";
 
 // --- Users Table
