@@ -15,6 +15,7 @@ export const SignupPage = () => {
   const [message, setMessage] = useState("");
   const router = useRouter();
 
+  // Updated signup function from your component
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage("");
@@ -26,14 +27,13 @@ export const SignupPage = () => {
     });
 
     const data = await res.json();
-    if (res.ok && data.token) {
-      localStorage.setItem("token", data.token); // or cookie, for more secure options
+    if (res.ok && data.success) {
+      // No need to manually store token as it's in the cookie now
       router.push("/"); // Redirect to home
     } else {
       setMessage(data.error || "Something went wrong");
     }
   };
-
   return (
     <div className="flex items-center justify-center">
       <div className="bg-black bg-opacity-10 p-10 rounded-3xl w-[1100px] h-[700px] shadow-xl">

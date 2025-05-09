@@ -3,6 +3,7 @@ import Link from "next/link";
 import { AuthButton } from "@/modules/auth/ui/components/auth-button";
 import { CreateClassButton } from "@/modules/class/ui/components/create/create-class-button";
 import { JoinClassButton } from "@/modules/class/ui/components/join/join-class-button";
+import { ProfileButton } from "@/modules/profile/ui/components/profile-button/profile-button";
 
 export const HomeNavbar = () => {
     return (
@@ -18,6 +19,9 @@ export const HomeNavbar = () => {
                 </div>
                 <div className="flex-shrink-0 items-center flex gap-4">
                     <JoinClassButton studentId="11111111-1111-1111-1111-111111111112" />
+                </div>
+                <div className="flex-shrink-0 items-center flex gap-4">
+                    <ProfileButton />
                 </div>
                 <div className="flex-shrink-0 items-center flex gap-4 ml-auto">
                     <CreateClassButton />

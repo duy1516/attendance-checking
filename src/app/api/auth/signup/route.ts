@@ -1,10 +1,11 @@
 import { Hono } from "hono";
-import { hash } from "bcryptjs"; // or bcrypt
+import { hash } from "bcryptjs";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { handle } from "hono/vercel";
 import { sign } from "jsonwebtoken";
+import { setCookie } from "hono/cookie";
 
 const app = new Hono();
 const JWT_SECRET = process.env.JWT_SECRET!;
@@ -33,15 +34,32 @@ app.post("/api/auth/signup", async (c) => {
 
   const user = newUser[0];
 
-  // Need to fix
+  // Create JWT token
   const token = sign(
     { id: user.id, role: user.role },
     JWT_SECRET,
     { expiresIn: "7d" }
   );
 
-  return c.json({ message: "User created", token });
+  // Set token in HTTP-only cookie
+  setCookie(c, "authToken", token, {
+    httpOnly: true, // Makes the cookie inaccessible to client-side JavaScript
+    secure: process.env.NODE_ENV === "production", // Only sends over HTTPS in production
+    maxAge: 60 * 60 * 24 * 7, // 7 days in seconds
+    path: "/", // Cookie is available on all paths
+    sameSite: "strict" // Protection against CSRF
+  });
+
+  return c.json({
+    success: true,
+    message: "User created successfully",
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role
+    }
+  });
 });
 
 export const POST = handle(app);
-
