@@ -39,9 +39,9 @@ export const CreateClassButton = () => {
       <Button
         onClick={() => setOpen(true)}
         variant="outline"
-        className="rounded-full"
+        className="rounded-full border-0"
       >
-        <PlusIcon className="w-4 h-4" />
+        <PlusIcon />
       </Button>
 
       {open && (

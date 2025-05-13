@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { PlusIcon } from "lucide-react";
 import { useState } from "react";
 
-export const JoinClassButton = ({ studentId }: { studentId: string }) => {
+export const JoinClassButton = () => {
   const [open, setOpen] = useState(false);
   const [classLink, setClassLink] = useState("");
   const [message, setMessage] = useState("");
@@ -14,7 +14,10 @@ export const JoinClassButton = ({ studentId }: { studentId: string }) => {
     setLoading(true);
     const res = await fetch("/api/class/join", {
       method: "POST",
-      body: JSON.stringify({ classLink, studentId }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ classLink }),
     });
 
     const data = await res.json();
@@ -23,10 +26,11 @@ export const JoinClassButton = ({ studentId }: { studentId: string }) => {
       alert("Successfully joined!");
       setOpen(false);
       setClassLink("");
-    }
-    else {
+      setMessage("");
+    } else {
       setMessage(data.error);
     }
+
     setLoading(false);
   };
 
@@ -72,11 +76,13 @@ export const JoinClassButton = ({ studentId }: { studentId: string }) => {
               >
                 {loading ? "Joining..." : "Join"}
               </Button>
-              {message && <p className="mt-2 text-sm text-gray-600">{message}</p>}
             </div>
+            {message && (
+              <p className="mt-2 text-sm text-red-500 text-center">{message}</p>
+            )}
           </div>
         </div>
       )}
     </>
   );
-}
+};

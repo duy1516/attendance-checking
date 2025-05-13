@@ -36,10 +36,10 @@ export const SignupPage = () => {
   };
   return (
     <div className="flex items-center justify-center">
-      <div className="bg-black bg-opacity-10 p-10 rounded-3xl w-[1100px] h-[700px] shadow-xl">
+      <div className="bg-black bg-opacity-10 p-10 rounded-3xl w-[1000px] h-[600px] shadow-xl">
         <p className="text-3xl font-bold text-center mb-2">Create your account</p>
         <p className="text-center text-xs mb-6">
-          Already have an account? <a href="/sign-in" className="underline">Log in</a>
+          Already have an account? <a href="/login" className="underline">Log in</a>
         </p>
 
         <div>
@@ -51,7 +51,7 @@ export const SignupPage = () => {
                 placeholder="What should we call you?"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="w-[800px] h-10 border px-3 py-2 mb-3 rounded-xl"
+                className="w-[800px] h-10 border p-2 my-2 rounded-xl"
                 required
               />
             </div>
@@ -63,7 +63,7 @@ export const SignupPage = () => {
                 placeholder="Enter your email address"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className="w-[800px] h-10 border px-3 py-2 mb-3 rounded-xl"
+                className="w-[800px] h-10 border p-2 my-2 rounded-xl"
                 required
               />
             </div>
@@ -76,23 +76,23 @@ export const SignupPage = () => {
                 minLength={8}
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
-                className="w-[800px] h-10 border px-3 py-2 mb-3 rounded-xl"
+                className="w-[800px] h-10 border p-2 my-2 rounded-xl"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">Select your role</label>
+              <label className="block text-sm font-medium mt-4 mb-1">Select your role</label>
               <select
                 value={form.role}
                 onChange={(e) => setForm({ ...form, role: e.target.value })}
-                className="w-[800px] h-10 border px-3 py-2 mb-3 rounded-xl"
+                className="w-[800px] h-10 border p-2 my-2 rounded-xl"
               >
                 <option value="student">Student</option>
                 <option value="teacher">Teacher</option>
               </select>
             </div>
-            <Button type="submit" className="p-2 rounded-xl mt-6">
+            <Button type="submit" className="p-2 rounded-xl mt-8 w-[100px] h-[40px]">
               Sign Up
             </Button>
             {message && <p className="text-sm mt-2 text-center">{message}</p>}

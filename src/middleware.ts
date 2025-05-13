@@ -1,46 +1,50 @@
-// middleware.ts
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { verify, JwtPayload } from 'jsonwebtoken';
+import { jwtVerify } from 'jose';
 
 // Define the shape of our JWT payload
-interface AuthTokenPayload extends JwtPayload {
+interface AuthTokenPayload {
   id: string;
   role: string;
 }
 
 export async function middleware(request: NextRequest) {
-  const authToken = request.cookies.get('authToken')?.value;
-  const JWT_SECRET = process.env.JWT_SECRET!;
+  console.log('Middleware running for path:', request.nextUrl.pathname); // Debug log
 
-  // URLs that should be protected
-  const protectedPaths = ['/profile', '/dashboard', '/attendance'];
+  const authToken = request.cookies.get('authToken')?.value;
+  console.log('Auth token exists:', !!authToken); // Don't log the actual token
+
+  const JWT_SECRET = process.env.JWT_SECRET || 'your_test_secret_key';
+  const secret = new TextEncoder().encode(JWT_SECRET);
+
+  const protectedPaths = ['/profile'];
   const isProtectedPath = protectedPaths.some(path =>
     request.nextUrl.pathname.startsWith(path)
   );
 
-  // If it's not a protected path, proceed normally
+  console.log('Is protected path:', isProtectedPath); // Debug log
+
   if (!isProtectedPath) {
     return NextResponse.next();
   }
 
-  // If there's no token and this is a protected path, redirect to login
   if (!authToken) {
+    console.log('No auth token found, redirecting to login');
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
   try {
-    // Verify the token
-    const decoded = verify(authToken, JWT_SECRET) as AuthTokenPayload;
-    // Token is valid, proceed
+    const { payload } = await jwtVerify(authToken, secret);
+    const decoded = payload as unknown as AuthTokenPayload;
+
+    console.log('Token verified for user ID:', decoded.id);
     return NextResponse.next();
   } catch (error) {
-    // Token is invalid, redirect to login
+    console.error('Token verification failed:', error);
     return NextResponse.redirect(new URL('/login', request.url));
   }
 }
 
-// Configure which paths the middleware runs on
 export const config = {
-  matcher: ['/profile/:path*', '/dashboard/:path*', '/attendance/:path*']
+  matcher: ['/profile/:path*']
 };

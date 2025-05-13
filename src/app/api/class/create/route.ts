@@ -3,6 +3,8 @@ import { Hono } from "hono";
 import { db } from "@/db";
 import { classes } from "@/db/schema";
 import { z } from "zod";
+import { verify } from "jsonwebtoken";
+import { getCookie } from "hono/cookie"; // ✅ correct import
 
 const app = new Hono();
 
@@ -11,7 +13,26 @@ const classSchema = z.object({
   description: z.string().optional(),
 });
 
+const JWT_SECRET = process.env.JWT_SECRET || "your_fallback_secret";
+
 app.post("/api/class/create", async (c) => {
+  const token = await getCookie(c, "authToken"); // ✅ correct usage
+
+  if (!token) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  let decoded;
+  try {
+    decoded = verify(token, JWT_SECRET) as { id: string; role: string };
+  } catch (err) {
+    return c.json({ error: "Invalid token" }, 401);
+  }
+
+  if (decoded.role !== "teacher") {
+    return c.json({ error: "Only teachers can create classes" }, 403);
+  }
+
   const body = await c.req.json();
   const parsed = classSchema.safeParse(body);
 
@@ -19,11 +40,10 @@ app.post("/api/class/create", async (c) => {
     return c.json({ error: parsed.error }, 400);
   }
 
-  const mockTeacherId = "11111111-1111-1111-1111-111111111111";
   const classLink = crypto.randomUUID().slice(0, 8);
 
   await db.insert(classes).values({
-    teacherId: mockTeacherId,
+    teacherId: decoded.id,
     className: parsed.data.className,
     description: parsed.data.description || null,
     classLink,

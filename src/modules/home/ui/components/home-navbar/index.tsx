@@ -1,11 +1,37 @@
+"use client";
+
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { AuthButton } from "@/modules/auth/ui/components/auth-button";
 import { CreateClassButton } from "@/modules/class/ui/components/create/create-class-button";
 import { JoinClassButton } from "@/modules/class/ui/components/join/join-class-button";
-import { ProfileButton } from "@/modules/profile/ui/components/profile-button/profile-button";
+import { useEffect, useState } from "react";
+
+type UserRole = "teacher" | "student" | null;
 
 export const HomeNavbar = () => {
+    const [role, setRole] = useState<UserRole>(null);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const res = await fetch("/api/auth/status");
+                const data = await res.json();
+
+                if (!data.isAuthenticated) {
+                    setRole(null);
+                    return;
+                }
+
+                setRole(data.user.role); // role should be 'teacher' or 'student'
+            } catch (err) {
+                setRole(null);
+            }
+        };
+
+        fetchUser();
+    }, []);
+
     return (
         <nav className="fixed top-0 left-0 right-0 h-16 bg-[#FBFBFB] flex items-center px-2 pr-5 z-50 border-b border-b-[#D9D9D9]">
             <div className="flex items-center gap-4 w-full">
@@ -17,19 +43,28 @@ export const HomeNavbar = () => {
                         </div>
                     </Link>
                 </div>
-                <div className="flex-shrink-0 items-center flex gap-4">
-                    <JoinClassButton studentId="11111111-1111-1111-1111-111111111112" />
-                </div>
-                <div className="flex-shrink-0 items-center flex gap-4">
-                    <ProfileButton />
-                </div>
-                <div className="flex-shrink-0 items-center flex gap-4 ml-auto">
-                    <CreateClassButton />
-                </div>
-                <div className="flex-shrink-0 items-center flex gap-4">
-                    <AuthButton />
+
+                <div className="flex items-center gap-4 ml-auto">
+                    {/* Student sees JoinClassButton */}
+                    {role === "student" && (
+                        <div className="flex-shrink-0 items-center flex gap-4">
+                            <JoinClassButton />
+                        </div>
+                    )}
+
+                    {/* Teacher sees CreateClassButton */}
+                    {role === "teacher" && (
+                        <div className="flex-shrink-0 items-center flex gap-4 ml-auto">
+                            <CreateClassButton />
+                        </div>
+                    )}
+
+                    {/* Everyone sees AuthButton */}
+                    <div className="flex-shrink-0 items-center flex gap-4">
+                        <AuthButton />
+                    </div>
                 </div>
             </div>
         </nav>
-    )
-}
+    );
+};

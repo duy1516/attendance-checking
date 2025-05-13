@@ -1,10 +1,8 @@
 "use client";
 
-import { LoginButton } from "../components/login-button";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 export const LoginPage = () => {
   const [form, setForm] = useState({
@@ -19,7 +17,7 @@ export const LoginPage = () => {
     setMessage("");
 
     try {
-      const res = await fetch("/api/auth/signin", {
+      const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -48,51 +46,44 @@ export const LoginPage = () => {
 
   return (
     <div className="flex items-center justify-center bg-white">
-      <div className="bg-black bg-opacity-10 p-10 rounded-3xl w-[1100px] h-[600px] shadow-xl">
-        <h1 className="text-2xl font-bold text-center mb-2">Log in</h1>
-        <p className="text-center text-sm mb-6">
-          Never been here? <a href="/sign-up" className="underline">Sign up</a>
+      <div className="bg-black bg-opacity-10 p-10 rounded-3xl w-[1000px] h-[600px] shadow-xl">
+        <p className="text-3xl font-bold text-center mb-2">Log in</p>
+        <p className="text-center text-xs mb-6">
+          Never been here? <a href="/signup" className="underline">Sign up</a>
         </p>
+        <div className='mt-20'>
+          <form onSubmit={handleSubmit} className="flex flex-col items-center">
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">Email address</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                className="w-[800px] h-10 border p-2 my-2 rounded-xl"
+                required
+              />
+            </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Email address</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={form.email}
-              onChange={handleChange}
-              className="w-[800px] h-10 border px-3 py-2 mb-3 rounded-xl"
-              required
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={form.password}
-              onChange={handleChange}
-              className="w-[800px] h-10 border px-3 py-2 mb-3 rounded-xl"
-              required
-            />
-          </div>
-
-          <div className="flex items-center mb-6">
-            <input id="stayLoggedIn" type="checkbox" className="mr-2" />
-            <label htmlFor="stayLoggedIn" className="text-sm">Stay logged in</label>
-          </div>
-          <button
-            type="submit"
-            className="w-full py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring"
-          >
-            Log In
-          </button>
-          {message && <p className="text-sm mt-2 text-center">{message}</p>}
-        </form>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={form.password}
+                onChange={handleChange}
+                className="w-[800px] h-10 border p-2 my-2 rounded-xl"
+                required
+              />
+            </div>
+            <Button type="submit" className="p-2 rounded-xl mt-20 w-[100px] h-[40px]">
+              Log in
+            </Button>
+            {message && <p className="text-sm mt-2 text-center">{message}</p>}
+          </form>
+        </div>
       </div>
     </div>
   );
