@@ -2,6 +2,7 @@ import { db } from "@/db";
 import { classes } from "@/db/schema";
 import { AnnouncementTable } from "@/modules/class/ui/components/announcement/announcement-table";
 import { AttendanceRecord } from "@/modules/class/ui/components/attendance/attendance-record";
+import { StudentList } from "@/modules/class/ui/components/student-list/student-list";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 
@@ -14,7 +15,6 @@ interface PageProps {
 const Page = async ({ params }: PageProps) => {
   const { classId } = await params;
 
-  // Fetch the class from DB
   const result = await db
     .select()
     .from(classes)
@@ -33,13 +33,17 @@ const Page = async ({ params }: PageProps) => {
         </div>
         <p className="mx-4 text-sm text-gray-500">Class Code: {classItem.classLink}</p>
       </div>
-      <div className="flex flex-col md:flex-row justify-between p-4">
-        <AnnouncementTable />
-        <AttendanceRecord />
+      <div className="flex flex-col p-4">
+        <div className="flex">
+          <AnnouncementTable />
+          <AttendanceRecord />
+        </div>
+        <div className="m-4">
+          <StudentList classId={classId} />
+        </div>
       </div>
     </>
   );
 };
 
 export default Page;
-
