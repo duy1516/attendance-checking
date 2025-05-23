@@ -1,5 +1,6 @@
 import { db } from "@/db";
 import { classes } from "@/db/schema";
+import { DeleteClassButton } from "@/modules/class/ui/components/delete-class/delete-class-button";
 import { AnnouncementTable } from "@/modules/class/ui/components/announcement/announcement-table";
 import { AttendanceRecord } from "@/modules/class/ui/components/attendance/attendance-record";
 import { StudentList } from "@/modules/class/ui/components/student-list/student-list";
@@ -31,12 +32,15 @@ const Page = async ({ params }: PageProps) => {
           <h1 className="text-3xl font-bold">{classItem.className}</h1>
           <p className="text-sm mt-1 text-gray-500">{classItem.description}</p>
         </div>
-        <p className="mx-4 text-sm text-gray-500">Class Code: {classItem.classLink}</p>
+        <div>
+          <p className="mx-4 text-sm text-gray-500">Class Code: {classItem.classLink}</p>
+          <DeleteClassButton classId={classId} />
+        </div>
       </div>
       <div className="flex flex-col p-4">
         <div className="flex">
-          <AnnouncementTable />
           <AttendanceRecord />
+          <AnnouncementTable />
         </div>
         <div className="m-4">
           <StudentList classId={classId} />

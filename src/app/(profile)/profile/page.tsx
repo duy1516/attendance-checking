@@ -1,56 +1,56 @@
-// app/profile/page.tsx
 'use client';
 
 import { LogoutButton } from '@/modules/auth/ui/components/logout-button';
+import { UserCircle2Icon } from 'lucide-react';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+}
+
 export default function ProfilePage() {
-  const [authStatus, setAuthStatus] = useState({ loading: true, isAuthenticated: false, error: null });
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const res = await fetch('/api/auth/status');
-        const data = await res.json();
-        console.log('Auth status response:', data); // Debug log
+    const fetchUser = async () => {
+      const res = await fetch('/api/auth/status');
+      const data = await res.json();
 
-        setAuthStatus({
-          loading: false,
-          isAuthenticated: data.isAuthenticated,
-          error: null
-        });
-      } catch (error) {
-        console.error('Error checking auth status:', error);
-        setAuthStatus({
-          loading: false,
-          isAuthenticated: false,
-          error: null,
-        });
+      if (data.isAuthenticated) {
+        setUser(data.user);
       }
+
+      setLoading(false);
     };
 
-    checkAuth();
+    fetchUser();
   }, []);
 
-  if (authStatus.loading) {
-    return <div>Loading...</div>;
-  }
+  if (loading) return <div>Loading...</div>;
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Profile Page</h1>
-      {authStatus.isAuthenticated ? (
-        <div>
-          <p>You are logged in!</p>
-          <p>Auth status debug: {JSON.stringify(authStatus)}</p>
+    <div className='flex'>
+      <div className="flex flex-col items-center justify-center p-4 mx-auto">
+        {user && (
+          <div className="flex flex-col items-center p-4">
+            <div className="flex items-center justify-center mb-4">
+              <Image src="/user-3296.svg" alt="Logo" width={100} height={100} />
+            </div>
+            <p className="font-bold text-3xl uppercase">{user.name}</p>
+            <p className='mt-4 text-sm opacity-50'>{user.email}</p>
+            <p className='text-sm opacity-50'>{user.role}</p>
+          </div>
+
+        )}
+        <div className="mt-4">
+          <LogoutButton />
         </div>
-      ) : (
-        <div>
-          <p>Authentication issue: {authStatus.error || 'Not logged in'}</p>
-          <p>Auth status debug: {JSON.stringify(authStatus)}</p>
-        </div>
-      )}
-      <LogoutButton />
+      </div>
     </div>
   );
 }

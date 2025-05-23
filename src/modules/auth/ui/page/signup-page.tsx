@@ -27,9 +27,9 @@ export const SignupPage = () => {
     });
 
     const data = await res.json();
+
     if (res.ok && data.success) {
-      // No need to manually store token as it's in the cookie now
-      router.push("/"); // Redirect to home
+      router.push("/");
     } else {
       setMessage(data.error || "Something went wrong");
     }

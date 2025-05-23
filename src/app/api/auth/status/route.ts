@@ -2,37 +2,44 @@
 import { Hono } from "hono";
 import { handle } from "hono/vercel";
 import { getCookie } from "hono/cookie";
-import { verify, JwtPayload } from "jsonwebtoken";
+import { verify } from "jsonwebtoken";
+import { db } from "@/db";
+import { users } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 const app = new Hono();
 const JWT_SECRET = process.env.JWT_SECRET!;
 
-// Define the shape of our JWT payload
-interface AuthTokenPayload extends JwtPayload {
-  id: string;
-  role: string;
-}
-
 app.get("/api/auth/status", async (c) => {
-  try {
-    const token = getCookie(c, "authToken");
+  const token = getCookie(c, "authToken");
 
-    if (!token) {
+  if (!token) {
+    return c.json({ isAuthenticated: false });
+  }
+
+  try {
+    const decoded = verify(token, JWT_SECRET) as { id: string; role: string };
+
+    // Get user from DB
+    const user = await db
+      .select({
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        role: users.role,
+      })
+      .from(users)
+      .where(eq(users.id, decoded.id));
+
+    if (!user.length) {
       return c.json({ isAuthenticated: false });
     }
 
-    // Verify the token and cast to our custom type
-    const decoded = verify(token, JWT_SECRET) as AuthTokenPayload;
-
     return c.json({
       isAuthenticated: true,
-      user: {
-        id: decoded.id,
-        role: decoded.role
-      }
+      user: user[0],
     });
-  } catch (error) {
-    // Token invalid or expired
+  } catch (err) {
     return c.json({ isAuthenticated: false });
   }
 });

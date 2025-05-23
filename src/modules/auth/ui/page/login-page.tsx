@@ -16,27 +16,20 @@ export const LoginPage = () => {
     e.preventDefault();
     setMessage("");
 
-    try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
 
-      const data = await res.json();
+    const data = await res.json();
 
-      if (res.ok && data.success) {
-        // No need to manually store token as it's in the cookie now
-        router.push("/"); // Redirect to home after login
-      } else {
-        setMessage(data.error || "Login failed");
-      }
-    } catch (error) {
-      setMessage("An error occurred. Please try again.");
-      console.error(error);
+    if (res.ok && data.success) {
+      router.push("/");
+    } else {
+      setMessage(data.error || "Login failed");
     }
   };
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({
       ...form,

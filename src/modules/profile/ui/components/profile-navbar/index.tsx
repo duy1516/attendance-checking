@@ -1,8 +1,5 @@
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import { ArrowLeftIcon } from "lucide-react";
 import Link from "next/link";
-import { AuthButton } from "@/modules/auth/ui/components/auth-button";
-import { CreateClassButton } from "@/modules/class/ui/components/create/create-class-button";
-import { JoinClassButton } from "@/modules/class/ui/components/join/join-class-button";
 
 export const ProfileNavbar = () => {
   return (
@@ -10,7 +7,8 @@ export const ProfileNavbar = () => {
       <div className="flex items-center gap-4 w-full">
         <div className="flex items-center flex-shrink-0">
           <Link href="/">
-            <div className="p-4 flex items-center gap-1">
+            <div className="flex items-center gap-1">
+              <ArrowLeftIcon className="mr-4" />
               <p className="text-xl font-semibold tracking-tight">Face scan</p>
             </div>
           </Link>

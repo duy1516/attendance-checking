@@ -4,7 +4,7 @@ import { db } from "@/db";
 import { classes } from "@/db/schema";
 import { z } from "zod";
 import { verify } from "jsonwebtoken";
-import { getCookie } from "hono/cookie"; // ✅ correct import
+import { getCookie } from "hono/cookie";
 
 const app = new Hono();
 
@@ -16,7 +16,7 @@ const classSchema = z.object({
 const JWT_SECRET = process.env.JWT_SECRET || "your_fallback_secret";
 
 app.post("/api/class/create", async (c) => {
-  const token = await getCookie(c, "authToken"); // ✅ correct usage
+  const token = await getCookie(c, "authToken");
 
   if (!token) {
     return c.json({ error: "Unauthorized" }, 401);
