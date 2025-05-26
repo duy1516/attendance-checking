@@ -3,14 +3,14 @@
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "lucide-react";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const CreateClassButton = () => {
   const [open, setOpen] = useState(false);
   const [className, setClassName] = useState("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
+  const queryClient = useQueryClient();
 
   const handleCreate = async () => {
     setLoading(true);
@@ -30,12 +30,11 @@ export const CreateClassButton = () => {
       setOpen(false);
       setClassName("");
       setDescription("");
-      router.refresh();
     } else {
       alert("Error creating class");
-      router.refresh();
     }
     setLoading(false);
+    queryClient.invalidateQueries({ queryKey: ["classes"] });
   };
 
   return (

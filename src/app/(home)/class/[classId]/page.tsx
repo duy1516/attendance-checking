@@ -1,11 +1,12 @@
 import { db } from "@/db";
-import { classes } from "@/db/schema";
+import { classes, users } from "@/db/schema";
 import { DeleteClassButton } from "@/modules/class/ui/components/delete-class/delete-class-button";
 import { AnnouncementTable } from "@/modules/class/ui/components/announcement/announcement-table";
 import { AttendanceRecord } from "@/modules/class/ui/components/attendance/attendance-record";
 import { StudentList } from "@/modules/class/ui/components/student-list/student-list";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
+import { LeaveClassButton } from "@/modules/class/ui/components/leave-class/leave-class-button";
 
 interface PageProps {
   params: Promise<{
@@ -22,6 +23,11 @@ const Page = async ({ params }: PageProps) => {
     .where(eq(classes.id, classId));
 
   const classItem = result[0];
+  const teacher = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, classItem.teacherId))
+    .then((res) => res[0]);
 
   if (!classItem) return notFound();
 
@@ -31,10 +37,12 @@ const Page = async ({ params }: PageProps) => {
         <div>
           <h1 className="text-3xl font-bold">{classItem.className}</h1>
           <p className="text-sm mt-1 text-gray-500">{classItem.description}</p>
+          <p className="text-sm mt-1 text-gray-500">Owner: {teacher?.name}</p>
         </div>
         <div>
           <p className="mx-4 text-sm text-gray-500">Class Code: {classItem.classLink}</p>
           <DeleteClassButton classId={classId} />
+          <LeaveClassButton classId={classId} />
         </div>
       </div>
       <div className="flex flex-col p-4">

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const LoginPage = () => {
   const [form, setForm] = useState({
@@ -11,6 +12,7 @@ export const LoginPage = () => {
   });
   const [message, setMessage] = useState("");
   const router = useRouter();
+  const queryClient = useQueryClient(); // ✅ React Query cache client
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,11 +27,13 @@ export const LoginPage = () => {
     const data = await res.json();
 
     if (res.ok && data.success) {
+      await queryClient.invalidateQueries({ queryKey: ["authStatus"] }); // ✅ Refresh auth status
       router.push("/");
     } else {
       setMessage(data.error || "Login failed");
     }
   };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({
       ...form,
@@ -44,7 +48,7 @@ export const LoginPage = () => {
         <p className="text-center text-xs mb-6">
           Never been here? <a href="/signup" className="underline">Sign up</a>
         </p>
-        <div className='mt-20'>
+        <div className="mt-20">
           <form onSubmit={handleSubmit} className="flex flex-col items-center">
             <div className="mb-4">
               <label className="block text-sm font-medium mb-1">Email address</label>
@@ -71,13 +75,15 @@ export const LoginPage = () => {
                 required
               />
             </div>
+
             <Button type="submit" className="p-2 rounded-xl mt-20 w-[100px] h-[40px]">
               Log in
             </Button>
-            {message && <p className="text-sm mt-2 text-center">{message}</p>}
+
+            {message && <p className="text-sm mt-2 text-center text-red-600">{message}</p>}
           </form>
         </div>
       </div>
     </div>
   );
-}
+};

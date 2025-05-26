@@ -17,7 +17,7 @@ export async function middleware(request: NextRequest) {
   const JWT_SECRET = process.env.JWT_SECRET || 'your_test_secret_key';
   const secret = new TextEncoder().encode(JWT_SECRET);
 
-  const protectedPaths = ['/profile, /class'];
+  const protectedPaths = ['/profile', '/class'];
   const isProtectedPath = protectedPaths.some(path =>
     request.nextUrl.pathname.startsWith(path)
   );
@@ -46,5 +46,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/profile/:path*, /class/:path*']
+  matcher: ['/profile/:path*', '/class/:path*']
 };

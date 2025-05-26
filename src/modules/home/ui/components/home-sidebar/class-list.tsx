@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/sidebar";
 import { BookIcon } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 type ClassItem = {
   id: string;
@@ -17,35 +17,47 @@ type ClassItem = {
   classLink: string | null;
 };
 
-export const ClassList = () => {
-  const [classes, setClasses] = useState<ClassItem[]>([]);
-  const [loading, setLoading] = useState(true);
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+};
 
-  useEffect(() => {
-    const fetchClasses = async () => {
-      try {
-        const res = await fetch("/api/class/list");
-        if (!res.ok) {
-          // Unauthorized or other error - treat as logged out
-          setClasses([]);
-        } else {
-          const data = await res.json();
-          setClasses(data.classes || []);
-        }
-      } catch (error) {
-        console.error("Failed to fetch classes:", error);
-        setClasses([]);
-      } finally {
-        setLoading(false);
+const useCurrentUser = () =>
+  useQuery<User>({
+    queryKey: ["auth-status"],
+    queryFn: async () => {
+      const res = await fetch("/api/auth/status");
+      const data = await res.json();
+      if (!res.ok || !data.isAuthenticated) {
+        throw new Error("Not authenticated");
       }
-    };
+      return data.user;
+    },
+    staleTime: 0,
+  });
 
-    fetchClasses();
-  }, []);
+const useClassList = (userId: string) =>
+  useQuery<ClassItem[]>({
+    queryKey: ["classes", userId],
+    queryFn: async () => {
+      const res = await fetch("/api/class/list");
+      if (!res.ok) throw new Error("Failed to fetch class list");
+      const data = await res.json();
+      return data.classes || [];
+    },
+    enabled: !!userId,
+  });
 
-  if (loading || classes.length === 0) {
-    return null; // Don't render anything
-  }
+export const ClassList = () => {
+  const { data: user, isLoading: userLoading } = useCurrentUser();
+  const {
+    data: classes = [],
+    isLoading: classLoading,
+  } = useClassList(user?.id || "");
+
+  if (userLoading || classLoading || classes.length === 0) return null;
 
   return (
     <SidebarGroup>
@@ -53,11 +65,7 @@ export const ClassList = () => {
         <SidebarMenu>
           {classes.map((item) => (
             <SidebarMenuItem key={item.id}>
-              <SidebarMenuButton
-                tooltip={item.className}
-                asChild
-                isActive={false}
-                onClick={() => { }}>
+              <SidebarMenuButton tooltip={item.className} asChild isActive={false}>
                 <Link href={`/class/${item.id}`} className="flex items-center gap-4">
                   <BookIcon className="h-6 w-6" />
                   <span className="text-black text-base">{item.className}</span>

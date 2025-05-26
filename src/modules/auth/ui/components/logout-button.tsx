@@ -1,28 +1,27 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const LogoutButton = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const handleLogout = async () => {
     try {
-      await fetch('/api/auth/logout', { method: 'POST' });
-      setIsAuthenticated(false);
-      router.push('/');
+      await fetch("/api/auth/logout", { method: "POST" });
+      // Invalidate auth status query so UI knows user is logged out
+      await queryClient.invalidateQueries({ queryKey: ["authStatus"] });
+      router.push("/login");
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.error("Logout failed:", error);
     }
   };
 
   return (
-    <Button
-      onClick={handleLogout}
-    >
+    <Button onClick={handleLogout}>
       Logout
     </Button>
   );
-}
+};

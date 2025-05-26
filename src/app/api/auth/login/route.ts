@@ -1,6 +1,6 @@
 // app/api/auth/login/route.ts
 import { Hono } from "hono";
-import { compare } from "bcryptjs"; // or bcrypt
+import { compare } from "bcryptjs";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -41,7 +41,7 @@ app.post("/api/auth/login", async (c) => {
   setCookie(c, "authToken", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    maxAge: 60 * 60 * 24 * 7, // 7 days in seconds
+    maxAge: 60 * 60 * 24 * 7, // 7 days
     path: "/",
     sameSite: "lax"
   });

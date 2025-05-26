@@ -59,7 +59,7 @@ app.post("/api/class/join", async (c) => {
     );
 
   if (existing.length > 0) {
-    return c.json({ error: "You already joined this class" }, 400);
+    return c.json({ error: "You have already joined this class" }, 400);
   }
 
   await db.insert(classStudents).values({
