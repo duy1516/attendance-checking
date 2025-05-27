@@ -1,7 +1,7 @@
 'use client';
 
 import { LogoutButton } from '@/modules/auth/ui/components/logout-button';
-import { UserCircle2Icon } from 'lucide-react';
+import { UploadForm } from '@/modules/face-recognition/ui/components/image-uploader/image-uploader';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
@@ -47,6 +47,9 @@ export default function ProfilePage() {
           </div>
 
         )}
+        <div>
+          <UploadForm userId={user?.id || ''} />
+        </div>
         <div className="mt-4">
           <LogoutButton />
         </div>

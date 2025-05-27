@@ -77,6 +77,9 @@ export const StudentList = ({ classId }: StudentListProps) => {
               <p className="font-medium">{student.name}</p>
               <p className="text-sm text-gray-500">{student.email}</p>
             </div>
+            <div >
+              {/* add attendance records later */}
+            </div>
             {userRole === "teacher" && (
               <Button
                 variant="destructive"

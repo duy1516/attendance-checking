@@ -12,7 +12,7 @@ export const AttendanceRecord = () => {
           <h1 className="font-bold text-2xl">Sessions</h1>
           {/* remove for teacher */}
           <VideoIcon
-            onClick={() => alert("zsd")}
+            onClick={() => navigator.mediaDevices.getUserMedia({ video: true, audio: false })}
             className="mb-2 cursor-pointer" />
         </div>
         <Separator />

@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 export const SignupPage = () => {
-
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -13,27 +12,62 @@ export const SignupPage = () => {
     role: "student",
   });
   const [message, setMessage] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
   const router = useRouter();
 
-  // Updated signup function from your component
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Handle signup with automatic face recognition linking
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage("");
+    setIsProcessing(true);
 
-    const res = await fetch("/api/auth/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
+    try {
+      // Step 1: Create user account
+      const signupRes = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
 
-    const data = await res.json();
+      const signupData = await signupRes.json();
 
-    if (res.ok && data.success) {
-      router.push("/");
-    } else {
-      setMessage(data.error || "Something went wrong");
+      if (!signupRes.ok || !signupData.success) {
+        setMessage(signupData.error || "Failed to create account");
+        setIsProcessing(false);
+        return;
+      }
+
+      // Step 2: Automatically link to face recognition system
+      const linkRes = await fetch("/api/face-recognition/user-link", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          web_user_id: signupData.user.id,
+          name: signupData.user.name,
+        }),
+      });
+
+      const linkData = await linkRes.json();
+
+      if (!linkRes.ok || !linkData.success) {
+        // Account was created but linking failed
+        setTimeout(() => router.push("/"), 3000);
+        return;
+      }
+
+      // Both steps successful
+      setMessage("Account created successfully!");
+      setTimeout(() => router.push("/"), 2000);
+
+    } catch (error) {
+      setMessage("An error occurred during signup");
+    } finally {
+      setIsProcessing(false);
     }
   };
+
+
+
   return (
     <div className="flex items-center justify-center">
       <div className="bg-black bg-opacity-10 p-10 rounded-3xl w-[1000px] h-[600px] shadow-xl">
@@ -43,7 +77,7 @@ export const SignupPage = () => {
         </p>
 
         <div>
-          <form onSubmit={handleSubmit} className="flex flex-col items-center">
+          <form onSubmit={handleSignup} className="flex flex-col items-center">
             <div className="flex flex-col mb-4">
               <label className="block text-sm font-medium mb-1">Username</label>
               <input
@@ -92,13 +126,24 @@ export const SignupPage = () => {
                 <option value="teacher">Teacher</option>
               </select>
             </div>
-            <Button type="submit" className="p-2 rounded-xl mt-8 w-[100px] h-[40px]">
-              Sign Up
+
+            <Button
+              type="submit"
+              disabled={isProcessing}
+              className="p-2 rounded-xl mt-8 w-[100px] h-[40px]"
+            >
+              {isProcessing ? "Processing..." : "Sign Up"}
             </Button>
-            {message && <p className="text-sm mt-2 text-center">{message}</p>}
+
+            {message && (
+              <p className={`text-sm mt-2 text-center ${message.includes("successfully") ? "text-green-600" : "text-red-600"
+                }`}>
+                {message}
+              </p>
+            )}
           </form>
         </div>
       </div>
     </div>
   );
-}
+};

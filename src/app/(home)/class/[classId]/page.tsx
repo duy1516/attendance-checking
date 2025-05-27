@@ -35,7 +35,7 @@ const Page = async ({ params }: PageProps) => {
     <>
       <div className="p-4 flex justify-between">
         <div>
-          <h1 className="text-3xl font-bold">{classItem.className}</h1>
+          <h1 className="text-3xl truncate font-bold max-w-[250px] md:max-w-[500px]">{classItem.className}</h1>
           <p className="text-sm mt-1 text-gray-500">{classItem.description}</p>
           <p className="text-sm mt-1 text-gray-500">Owner: {teacher?.name}</p>
         </div>

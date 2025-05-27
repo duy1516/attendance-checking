@@ -48,8 +48,8 @@ export const CreateClassButton = () => {
       </Button>
 
       {open && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="bg-black bg-opacity-10 backdrop-blur-lg p-6 rounded-2xl w-full max-w-xl shadow-xl">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm z-50">
+          <div className="bg-white p-6 rounded-2xl w-full max-w-xl shadow-xl">
             <h2 className="text-xl font-semibold mb-4">Create New Class</h2>
             <div>
               <p>Class name (required)</p>
