@@ -30,7 +30,7 @@ app.post('/api/face-recognition/user-link', async (c) => {
     }
 
     // Forward to FastAPI - it will handle creating API user and linking
-    const fastapiUrl = 'http://127.0.0.1:8000/user/link-user/';
+    const fastapiUrl = 'http://127.0.0.1:8000/user/link-user';
 
     const response = await fetch(fastapiUrl, {
       method: 'POST',
@@ -46,9 +46,6 @@ app.post('/api/face-recognition/user-link', async (c) => {
     if (!response.ok) {
       return c.json({ error: data.detail || 'FastAPI linking failed' }, response.status as any);
     }
-
-    // FastAPI should return something like:
-    // { "success": true, "api_user_id": 123, "message": "User linked successfully" }
 
     return c.json({
       success: true,

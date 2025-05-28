@@ -48,10 +48,11 @@ export const SignupPage = () => {
       });
 
       const linkData = await linkRes.json();
-
+      // To-do: don't allow teachers to link their accounts
+      // don't create account if linking fails
       if (!linkRes.ok || !linkData.success) {
-        // Account was created but linking failed
-        setTimeout(() => router.push("/"), 3000);
+        setMessage("Something went wrong, please try again");
+        setTimeout(() => router.push("/sign-up"), 3000);
         return;
       }
 

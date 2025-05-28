@@ -36,6 +36,8 @@ export function UploadForm({ userId }: UploadFormProps) {
   };
 
   return (
+    // make the input prettier
+    // disable the button for teachers
     <div className="flex flex-col items-center">
       <input type="file" onChange={handleFileChange} />
       {uploading && <p className="mt-2 text-sm text-blue-500">Uploading...</p>}
