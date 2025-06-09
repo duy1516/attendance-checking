@@ -1,47 +1,95 @@
 'use client';
 
-import { useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
 
 interface UploadFormProps {
   userId: string;
 }
 
+const fetchAuthStatus = async () => {
+  const res = await fetch('/api/auth/status', { credentials: 'include' });
+  if (!res.ok) throw new Error('Failed to fetch auth status');
+  return res.json();
+};
+
 export function UploadForm({ userId }: UploadFormProps) {
-  const [uploading, setUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const { data, isLoading: loadingRole } = useQuery({
+    queryKey: ['authStatus'],
+    queryFn: fetchAuthStatus,
+  });
 
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('user_id', userId);
+  useEffect(() => {
+    if (uploadSuccess) {
+      const timer = setTimeout(() => {
+        setUploadSuccess(null);
+      }, 2000); // 2 seconds
 
-    try {
-      setUploading(true);
-      const response = await fetch('/api/face-recognition/upload', {
+      return () => clearTimeout(timer); // Cleanup
+    }
+  }, [uploadSuccess]);
+
+
+  const uploadMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('user_id', userId);
+
+      const res = await fetch('/api/face-recognition/upload', {
         method: 'POST',
         body: formData,
       });
 
-      const data = await response.json();
-      setUploadSuccess(data.message || 'Upload successful');
-    } catch (error) {
-      console.error('Upload failed:', error);
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.message || 'Upload failed');
+      return result;
+    },
+    onSuccess: (data) => {
+      setUploadSuccess(data.message || 'Choose another image with a clearer face');
+      queryClient.invalidateQueries({ queryKey: ['userImages'] });
+    },
+    onError: () => {
       setUploadSuccess('Upload failed');
-    } finally {
-      setUploading(false);
+    },
+  });
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      uploadMutation.mutate(file);
     }
   };
 
+  if (loadingRole) return null;
+  if (data?.user?.role !== 'student') return null;
+
   return (
-    // make the input prettier
-    // disable the button for teachers
-    <div className="flex flex-col items-center">
-      <input type="file" onChange={handleFileChange} />
-      {uploading && <p className="mt-2 text-sm text-blue-500">Uploading...</p>}
-      {uploadSuccess && <p className="mt-2 text-sm text-green-500">{uploadSuccess}</p>}
+    <div>
+      <label
+        htmlFor="file-upload"
+        className="cursor-pointer inline-flex items-center justify-center px-4 py-2 text-black opacity-50 text-sm font-medium rounded hover:opacity-100 transition-opacity duration-200"
+      >
+        Add pictures +
+      </label>
+      <input
+        id="file-upload"
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange}
+        className="hidden"
+      />
+
+      {uploadMutation.isPending && (
+        <p className="mt-2 text-sm text-blue-500">Uploading...</p>
+      )}
+      {uploadSuccess && (
+        <p className="mt-2 text-sm text-green-500">{uploadSuccess}</p>
+      )}
+
     </div>
   );
 }

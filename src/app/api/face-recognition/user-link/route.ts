@@ -51,7 +51,7 @@ app.post('/api/face-recognition/user-link', async (c) => {
       success: true,
       message: 'User successfully linked to face recognition system',
       web_user_id: web_user_id,
-      api_user_id: data.api_user_id || data.user_id, // Depends on FastAPI response structure
+      api_user_id: data.api_user_id || data.user_id,
       data
     }, 200);
 

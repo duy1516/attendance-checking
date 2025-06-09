@@ -47,7 +47,7 @@ const Page = async ({ params }: PageProps) => {
       </div>
       <div className="flex flex-col p-4">
         <div className="flex">
-          <AttendanceRecord />
+          <AttendanceRecord classId={classId} />
           <AnnouncementTable />
         </div>
         <div className="m-4">

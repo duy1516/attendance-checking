@@ -55,7 +55,7 @@ app.post('/', async (c) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         web_user_id: decoded.id,
-        name: decoded.name || 'User' // You might want to include name in JWT or get it another way
+        name: decoded.name || 'User'
       }),
     });
 

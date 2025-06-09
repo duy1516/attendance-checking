@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, timestamp, unique } from "drizzle-orm/pg-core";
 
 // --- Users Table
 export const users = pgTable("users", {
@@ -43,9 +43,12 @@ export const attendanceRecords = pgTable("attendance_records", {
   id: uuid("id").defaultRandom().primaryKey(),
   sessionId: uuid("session_id").notNull().references(() => attendanceSessions.id),
   studentId: uuid("student_id").notNull().references(() => users.id),
-  attendanceTime: timestamp("attendance_time").defaultNow(),
-  status: text("status"), // e.g., 'present', 'absent'
-});
+  status: text("status").default("present"), // 'present', 'absent'
+  scannedAt: timestamp("scanned_at").defaultNow(),
+}, (table) => ({
+  // Prevent duplicate attendance for same session
+  uniqueSessionStudent: unique().on(table.sessionId, table.studentId),
+}));
 
 // --- Announcements (may delete this if not needed)
 export const announcements = pgTable("announcements", {
