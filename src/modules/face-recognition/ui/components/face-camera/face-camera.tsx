@@ -116,7 +116,7 @@ export default function FaceScanner({ classId }: { classId: string }) {
           if (blob) {
             const formData = new FormData()
             formData.append('image', blob, 'capture.jpg')
-            formData.append('classId', classId) // Add this line
+            formData.append('classId', classId)
             mutation.mutate(formData, {
               onSettled: () => setIsProcessing(false),
             })

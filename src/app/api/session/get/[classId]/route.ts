@@ -1,4 +1,4 @@
-// src/app/api/session/[classId]/get/route.ts
+// src/app/api/session/get/[classId]/route.ts
 import { Hono } from "hono";
 import { handle } from "hono/vercel";
 import { getCookie } from "hono/cookie";
@@ -13,8 +13,6 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 app.get("/api/session/get/:classId", async (c) => {
   const token = getCookie(c, "authToken");
   if (!token) return c.json({ error: "Unauthorized" }, 401);
-
-  // Optional: verify user if you want to restrict access
   try {
     verify(token, JWT_SECRET);
   } catch {

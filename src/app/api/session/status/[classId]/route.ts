@@ -1,3 +1,5 @@
+//check for open sessions 
+
 import { Hono } from "hono";
 import { handle } from "hono/vercel";
 import { and, eq } from "drizzle-orm";

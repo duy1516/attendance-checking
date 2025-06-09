@@ -34,17 +34,19 @@ const Page = async ({ params }: PageProps) => {
   return (
     <>
       <div className="p-4 flex justify-between">
-        <div>
+        <div className="flex flex-col px-4">
           <h1 className="text-3xl truncate font-bold max-w-[250px] md:max-w-[500px]">{classItem.className}</h1>
           <p className="text-sm mt-1 text-gray-500">{classItem.description}</p>
           <p className="text-sm mt-1 text-gray-500">Owner: {teacher?.name}</p>
-        </div>
-        <div>
+        </div >
+        <div className="">
           <p className="mx-4 text-sm text-gray-500">Class Code: {classItem.classLink}</p>
-          <DeleteClassButton classId={classId} />
-          <LeaveClassButton classId={classId} />
+          <div className="flex justify-end">
+            <DeleteClassButton classId={classId} />
+            <LeaveClassButton classId={classId} />
+          </div>
         </div>
-      </div>
+      </div >
       <div className="flex flex-col p-4">
         <div className="flex">
           <AttendanceRecord classId={classId} />
