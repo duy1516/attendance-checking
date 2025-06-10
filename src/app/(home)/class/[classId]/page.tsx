@@ -50,7 +50,7 @@ const Page = async ({ params }: PageProps) => {
       <div className="flex flex-col p-4">
         <div className="flex">
           <AttendanceRecord classId={classId} />
-          <AnnouncementTable />
+          <AnnouncementTable classId={classId} teacherId={teacher?.id} teacherName={teacher?.name} />
         </div>
         <div className="m-4">
           <StudentList classId={classId} />

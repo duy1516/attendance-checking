@@ -50,7 +50,7 @@ export const attendanceRecords = pgTable("attendance_records", {
   uniqueSessionStudent: unique().on(table.sessionId, table.studentId),
 }));
 
-// --- Announcements (may delete this if not needed)
+// --- Announcements 
 export const announcements = pgTable("announcements", {
   id: uuid("id").defaultRandom().primaryKey(),
   classId: uuid("class_id").notNull().references(() => classes.id),

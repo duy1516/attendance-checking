@@ -40,7 +40,7 @@ export const AttendanceRecord = ({ classId }: { classId: string }) => {
 
   const activeSessionId = sessionStatus?.sessionOpen ? sessionStatus?.session?.id : null;
 
-  const handleSessionCreated = async (sessionId: string) => {
+  const handleSessionCreated = async () => {
     await refetchSessionStatus();
     await refetchSessions();
   };

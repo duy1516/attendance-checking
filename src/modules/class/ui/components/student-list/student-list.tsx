@@ -10,6 +10,11 @@ type Student = {
   email: string;
 };
 
+type AttendanceSession = {
+  id: string;
+  sessionDate: string;
+};
+
 type AttendanceRecord = {
   sessionId: string;
   studentId: string;
@@ -57,6 +62,7 @@ export const StudentList = ({ classId }: StudentListProps) => {
   const {
     data: sessionsData,
     isLoading: sessionsLoading,
+    refetch: refetchSessions,
   } = useQuery({
     queryKey: ["sessions", classId],
     queryFn: async () => {
@@ -125,50 +131,42 @@ export const StudentList = ({ classId }: StudentListProps) => {
   const sessions = sessionsData?.sessions || [];
 
   return (
-    <div className="bg-white border border-[#D9D9D9] rounded-lg shadow-md p-4 ">
+    <div className="bg-white border border-[#D9D9D9] rounded-lg shadow-md p-4">
       <h2 className="text-lg font-semibold mb-3">Enrolled Students</h2>
-
-      <div className="flex justify-between w-full">
-        {/* Fixed left column for student info */}
-        <div className="flex-shrink-0">
-          <table className="border-collapse">
+      {sessions.length === 0 && (
+        <p className="text-sm text-gray-500 mt-4 text-center italic">
+          No attendance sessions found for this class.
+        </p>
+      )}
+      <div className="overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse">
             <thead>
-              <tr>
-                <th className="text-left py-3 px-4 font-semibold text-gray-700 w-[200px]">
+              <tr className="border-b">
+                <th className="sticky left-0 z-10 bg-white text-left py-3 px-4 font-semibold text-gray-700 min-w-[200px] border-r border-gray-200">
                   Student Info
                 </th>
-              </tr>
-            </thead>
-            <tbody>
-              {studentsData.map((student) => (
-                <tr key={student.id}>
-                  <td className="py-3 px-4">
-                    <div>
-                      <p className="font-medium text-gray-900">{student.name}</p>
-                      <p className="text-sm text-gray-500">{student.email}</p>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Scrollable middle section for attendance records */}
-        <div className="flex-1 overflow-x-auto max-w-[800px]">
-          <table className="border-collapse">
-            <thead>
-              <tr>
                 {sessionsData.sessions.map((session: any) => (
                   <th key={session.id} className="text-center py-3 px-4 font-semibold text-gray-700 min-w-[120px]">
                     {new Date(session.sessionDate).toLocaleDateString('en-GB')}
                   </th>
                 ))}
+                {userRole === "teacher" && (
+                  <th className="sticky right-0 z-10 bg-white text-center py-3 px-4 font-semibold text-gray-700 min-w-[100px] border-l border-gray-200">
+                    Actions
+                  </th>
+                )}
               </tr>
             </thead>
             <tbody>
               {studentsData.map((student) => (
-                <tr key={student.id}>
+                <tr key={student.id} className="border-b border-gray-100">
+                  <td className="sticky left-0 z-10 bg-white py-3 px-4 border-r border-gray-200">
+                    <div>
+                      <p className="font-medium text-gray-900">{student.name}</p>
+                      <p className="text-sm text-gray-500">{student.email}</p>
+                    </div>
+                  </td>
                   {sessionsData.sessions.map((session: any) => {
                     const record = getAttendanceRecord(student.id, session.id);
                     return (
@@ -193,27 +191,8 @@ export const StudentList = ({ classId }: StudentListProps) => {
                       </td>
                     );
                   })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Fixed right column for actions */}
-        {userRole === "teacher" && (
-          <div className="flex-shrink-0">
-            <table className="border-collapse">
-              <thead>
-                <tr>
-                  <th className="text-center py-3 px-4 font-semibold text-gray-700 w-[100px]">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {studentsData.map((student) => (
-                  <tr key={student.id} className="border-b border-gray-100 hover:bg-gray-50">
-                    <td className="py-3 px-4 text-center">
+                  {userRole === "teacher" && (
+                    <td className="sticky right-0 z-10 bg-white py-3 px-4 text-center border-l border-gray-200">
                       <Button
                         variant="destructive"
                         size="sm"
@@ -223,19 +202,13 @@ export const StudentList = ({ classId }: StudentListProps) => {
                         Remove
                       </Button>
                     </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-
-      {sessions.length === 0 && (
-        <p className="text-sm text-gray-500 mt-4 text-center italic">
-          No attendance sessions found for this class.
-        </p>
-      )}
     </div>
   );
 };
