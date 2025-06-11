@@ -10,11 +10,6 @@ type Student = {
   email: string;
 };
 
-type AttendanceSession = {
-  id: string;
-  sessionDate: string;
-};
-
 type AttendanceRecord = {
   sessionId: string;
   studentId: string;
@@ -62,7 +57,6 @@ export const StudentList = ({ classId }: StudentListProps) => {
   const {
     data: sessionsData,
     isLoading: sessionsLoading,
-    refetch: refetchSessions,
   } = useQuery({
     queryKey: ["sessions", classId],
     queryFn: async () => {
@@ -146,7 +140,7 @@ export const StudentList = ({ classId }: StudentListProps) => {
                 <th className="sticky left-0 z-10 bg-white text-left py-3 px-4 font-semibold text-gray-700 min-w-[200px] border-r border-gray-200">
                   Student Info
                 </th>
-                {sessionsData.sessions.map((session: any) => (
+                {sessionsData.sessions.map((session: { id: string; sessionDate: string }) => (
                   <th key={session.id} className="text-center py-3 px-4 font-semibold text-gray-700 min-w-[120px]">
                     {new Date(session.sessionDate).toLocaleDateString('en-GB')}
                   </th>
@@ -167,7 +161,7 @@ export const StudentList = ({ classId }: StudentListProps) => {
                       <p className="text-sm text-gray-500">{student.email}</p>
                     </div>
                   </td>
-                  {sessionsData.sessions.map((session: any) => {
+                  {sessionsData.sessions.map((session: { id: string }) => {
                     const record = getAttendanceRecord(student.id, session.id);
                     return (
                       <td key={session.id} className="py-3 px-4 text-center">

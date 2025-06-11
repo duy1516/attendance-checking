@@ -17,7 +17,7 @@ app.get('/', async (c) => {
       return c.json({ error: 'Unauthorized' }, 401);
     }
 
-    const decoded = verify(token, JWT_SECRET) as any;
+    const decoded = verify(token, JWT_SECRET) as { id: string; name: string };
 
     if (!decoded || !decoded.id) {
       return c.json({ error: 'Invalid token' }, 401);
@@ -35,7 +35,7 @@ app.get('/', async (c) => {
 
     const linkData = await linkRes.json();
     if (!linkRes.ok) {
-      return c.json({ error: 'Failed to link user', detail: linkData }, linkRes.status as any);
+      return c.json({ error: 'Failed to link user', detail: linkData }, 400);
     }
 
     const faceApiUserId = linkData.api_user_id;
@@ -48,7 +48,7 @@ app.get('/', async (c) => {
     const userImagesData = await userImagesRes.json();
 
     if (!userImagesRes.ok) {
-      return c.json({ error: 'Failed to fetch user images', detail: userImagesData }, userImagesRes.status as any);
+      return c.json({ error: 'Failed to fetch user images', detail: userImagesData }, 400);
     }
 
     const imageIds = userImagesData.detail?.data?.images || [];

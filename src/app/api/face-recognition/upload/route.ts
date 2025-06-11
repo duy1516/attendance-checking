@@ -41,7 +41,10 @@ app.post('/', async (c) => {
       body: JSON.stringify(requestBody),
     });
 
-    const validateData = await validateRes.json();
+    if (!validateRes.ok) {
+      const validateData = await validateRes.json();
+      return c.json({ error: 'Face validation failed', detail: validateData }, 400);
+    }
 
     // Step 3: Get current user from JWT
     const token = getCookie(c, 'authToken');
@@ -61,7 +64,7 @@ app.post('/', async (c) => {
 
     const linkData = await linkRes.json();
     if (!linkRes.ok) {
-      return c.json({ error: 'Failed to link user', detail: linkData }, linkRes.status as any);
+      return c.json({ error: 'Failed to link user', detail: linkData }, 400);
     }
 
     const faceApiUserId = linkData.api_user_id;
@@ -83,7 +86,7 @@ app.post('/', async (c) => {
 
     const embedData = await embedRes.json();
     if (!embedRes.ok) {
-      return c.json({ error: 'Embedding failed', detail: embedData }, embedRes.status as any);
+      return c.json({ error: 'Embedding failed', detail: embedData }, 400);
     }
 
     return c.json({

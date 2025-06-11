@@ -12,7 +12,7 @@ app.patch("/api/session/:sessionId/close", async (c) => {
   const token = getCookie(c, "authToken");
   if (!token) return c.json({ error: "Unauthorized" }, 401);
 
-  const { id: userId, role } = verify(token, JWT_SECRET) as { id: string; role: string };
+  const { role } = verify(token, JWT_SECRET) as { id: string; role: string };
   if (role !== "teacher") return c.json({ error: "Forbidden" }, 403);
 
   const { sessionId } = c.req.param();

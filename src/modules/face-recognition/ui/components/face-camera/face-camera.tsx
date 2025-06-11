@@ -28,7 +28,6 @@ export default function FaceScanner({ classId }: { classId: string }) {
   const [showModal, setShowModal] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   const [streaming, setStreaming] = useState(false)
-  const [isProcessing, setIsProcessing] = useState(false)
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['authStatus'],
@@ -102,8 +101,6 @@ export default function FaceScanner({ classId }: { classId: string }) {
   const captureImage = () => {
     if (!videoRef.current) return
 
-    setIsProcessing(true)
-
     const canvas = document.createElement('canvas')
     canvas.width = videoRef.current.videoWidth
     canvas.height = videoRef.current.videoHeight
@@ -117,19 +114,15 @@ export default function FaceScanner({ classId }: { classId: string }) {
             const formData = new FormData()
             formData.append('image', blob, 'capture.jpg')
             formData.append('classId', classId)
-            mutation.mutate(formData, {
-              onSettled: () => setIsProcessing(false),
-            })
+            mutation.mutate(formData)
           } else {
             alert('Failed to capture image blob')
-            setIsProcessing(false)
           }
         },
         'image/jpeg'
       )
     } else {
       alert('Failed to get canvas context')
-      setIsProcessing(false)
     }
   }
 

@@ -60,7 +60,7 @@ export const SignupPage = () => {
       setMessage("Account created successfully!");
       setTimeout(() => router.push("/"), 2000);
 
-    } catch (error) {
+    } catch {
       setMessage("An error occurred during signup");
     } finally {
       setIsProcessing(false);

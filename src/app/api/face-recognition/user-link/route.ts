@@ -44,7 +44,7 @@ app.post('/api/face-recognition/user-link', async (c) => {
     const data = await response.json();
 
     if (!response.ok) {
-      return c.json({ error: data.detail || 'FastAPI linking failed' }, response.status as any);
+      return c.json({ error: data.detail || 'FastAPI linking failed' }, 400);
     }
 
     return c.json({
@@ -55,9 +55,8 @@ app.post('/api/face-recognition/user-link', async (c) => {
       data
     }, 200);
 
-  } catch (error: any) {
-    console.error('Link user error:', error);
-    return c.json({ error: error.message || 'Internal server error' }, 500);
+  } catch {
+    return c.json({ error: 'Internal server error' }, 500);
   }
 });
 

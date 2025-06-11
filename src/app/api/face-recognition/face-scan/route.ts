@@ -39,7 +39,7 @@ app.post('/', async (c) => {
     }
 
     currentUser = userResult[0];
-  } catch (err) {
+  } catch {
     return c.json({ error: 'Invalid authentication token' }, 401);
   }
 
@@ -127,14 +127,14 @@ app.post('/', async (c) => {
   });
 
   if (!validateRes.ok) {
-    return c.json({ error: 'Face validation failed' }, validateRes.status as any);
+    return c.json({ error: 'Face validation failed' }, 400);
   }
 
   const recognizeRes = await fetch(`${FASTAPI_BASE}/facenet/name?image_id=${validImageId}`)
   const result = await recognizeRes.json()
 
   if (!recognizeRes.ok) {
-    return c.json({ error: result.detail?.message || 'Recognition failed' }, recognizeRes.status as any)
+    return c.json({ error: result.detail?.message || 'Recognition failed' }, 400)
   }
 
   const apiUserId = result.detail.data.id;

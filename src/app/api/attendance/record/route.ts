@@ -36,7 +36,7 @@ app.post("/api/attendance/record", async (c) => {
     await db.insert(attendanceRecords).values(parsed);
 
     return c.json({ success: true });
-  } catch (e) {
+  } catch {
     return c.json({ error: "Failed to record attendance" }, 500);
   }
 });

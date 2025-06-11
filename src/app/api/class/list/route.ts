@@ -29,7 +29,7 @@ app.get("/api/class/list", async (c) => {
   let decoded: AuthTokenPayload;
   try {
     decoded = verify(token, JWT_SECRET) as AuthTokenPayload;
-  } catch (err) {
+  } catch {
     return c.json({ classes: [] }, 200); // Invalid token → return empty list
   }
 

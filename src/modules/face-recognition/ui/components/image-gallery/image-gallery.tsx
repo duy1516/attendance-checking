@@ -135,7 +135,7 @@ const UserImagesGallery = () => {
           <ImageIcon className="w-16 h-16 text-gray-400 mb-4" />
           <h3 className="text-lg font-semibold text-gray-600 mb-2">No Images Found</h3>
           <p className="text-gray-500 text-center">
-            You haven't uploaded any images yet. Upload some images to see them here!
+            You haven&lsquo;t uploaded any images yet. Upload some images to see them here!
           </p>
         </div>
       ) : (

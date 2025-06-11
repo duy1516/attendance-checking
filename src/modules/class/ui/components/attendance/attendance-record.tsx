@@ -11,7 +11,6 @@ export const AttendanceRecord = ({ classId }: { classId: string }) => {
   // Fetch current session status
   const {
     data: sessionStatus,
-    isLoading: statusLoading,
     refetch: refetchSessionStatus,
   } = useQuery({
     queryKey: ["sessionStatus", classId],
@@ -88,7 +87,7 @@ export const AttendanceRecord = ({ classId }: { classId: string }) => {
             <p className="text-sm text-gray-500">Loading sessions...</p>
           ) : sessionsData?.sessions?.length > 0 ? (
             <div className="space-y-2 max-h-[150px] overflow-y-auto">
-              {sessionsData.sessions.map((session: any) => (
+              {sessionsData.sessions.map((session: { id: string; name: string; sessionDate: string; status: string }) => (
                 <div
                   key={session.id}
                   className={`p-2 border-0 rounded-md text-sm ${session.id === activeSessionId

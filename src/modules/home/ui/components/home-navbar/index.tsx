@@ -24,7 +24,7 @@ export const HomeNavbar = () => {
                 }
 
                 setRole(data.user.role); // role should be 'teacher' or 'student'
-            } catch (err) {
+            } catch {
                 setRole(null);
             }
         };

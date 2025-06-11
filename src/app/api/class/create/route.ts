@@ -25,7 +25,7 @@ app.post("/api/class/create", async (c) => {
   let decoded;
   try {
     decoded = verify(token, JWT_SECRET) as { id: string; role: string };
-  } catch (err) {
+  } catch {
     return c.json({ error: "Invalid token" }, 401);
   }
 

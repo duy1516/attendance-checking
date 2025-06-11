@@ -1,10 +1,16 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { SquarePenIcon, CalendarIcon, UserIcon } from "lucide-react";
@@ -33,18 +39,11 @@ type User = {
 };
 
 export const AnnouncementTable = ({ classId, teacherId, teacherName }: AnnouncementTableProps) => {
-  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newAnnouncement, setNewAnnouncement] = useState({
     title: "",
-    message: ""
+    message: "",
   });
-
-  // Fetch announcements on component mount
-  useEffect(() => {
-    fetchAnnouncements();
-  }, [classId]);
 
   const fetchAuthStatus = async (): Promise<{ user: User | null }> => {
     const res = await fetch("/api/auth/status");
@@ -53,40 +52,38 @@ export const AnnouncementTable = ({ classId, teacherId, teacherName }: Announcem
     return data.isAuthenticated ? { user: data.user } : { user: null };
   };
 
-  const { data } = useQuery({
+  const {
+    data: authData,
+  } = useQuery({
     queryKey: ["authStatus"],
     queryFn: fetchAuthStatus,
     staleTime: 1000 * 60,
   });
 
-  const user = data?.user;
+  const user = authData?.user;
   const isTeacher = user?.role === "teacher";
 
-
-  const fetchAnnouncements = async () => {
-    try {
-      setIsLoading(true);
-      // Replace with your actual API endpoint
-      const response = await fetch(`/api/announcements?classId=${classId}`);
-      if (response.ok) {
-        const data = await response.json();
-        setAnnouncements(data);
-      }
-    } catch (error) {
-      console.error('Error fetching announcements:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const {
+    data: announcements = [],
+    isLoading,
+    refetch,
+  } = useQuery<Announcement[]>({
+    queryKey: ["announcements", classId],
+    queryFn: async () => {
+      const res = await fetch(`/api/announcements?classId=${classId}`);
+      if (!res.ok) throw new Error("Failed to fetch announcements");
+      return res.json();
+    },
+  });
 
   const createAnnouncement = async () => {
     if (!newAnnouncement.title.trim()) return;
 
     try {
-      const response = await fetch('/api/announcements', {
-        method: 'POST',
+      const response = await fetch("/api/announcements", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           classId,
@@ -97,13 +94,12 @@ export const AnnouncementTable = ({ classId, teacherId, teacherName }: Announcem
       });
 
       if (response.ok) {
-        const createdAnnouncement = await response.json();
-        setAnnouncements(prev => [createdAnnouncement, ...prev]);
+        await refetch(); // Refresh list after creation
         setNewAnnouncement({ title: "", message: "" });
         setIsDialogOpen(false);
       }
     } catch (error) {
-      console.error('Error creating announcement:', error);
+      console.error("Error creating announcement:", error);
     }
   };
 
@@ -141,7 +137,12 @@ export const AnnouncementTable = ({ classId, teacherId, teacherName }: Announcem
                       <Input
                         id="title"
                         value={newAnnouncement.title}
-                        onChange={(e) => setNewAnnouncement(prev => ({ ...prev, title: e.target.value }))}
+                        onChange={(e) =>
+                          setNewAnnouncement((prev) => ({
+                            ...prev,
+                            title: e.target.value,
+                          }))
+                        }
                         placeholder="Enter announcement title"
                       />
                     </div>
@@ -152,7 +153,12 @@ export const AnnouncementTable = ({ classId, teacherId, teacherName }: Announcem
                       <Textarea
                         id="message"
                         value={newAnnouncement.message}
-                        onChange={(e) => setNewAnnouncement(prev => ({ ...prev, message: e.target.value }))}
+                        onChange={(e) =>
+                          setNewAnnouncement((prev) => ({
+                            ...prev,
+                            message: e.target.value,
+                          }))
+                        }
                         placeholder="Enter announcement message (optional)"
                         rows={4}
                       />
@@ -183,7 +189,10 @@ export const AnnouncementTable = ({ classId, teacherId, teacherName }: Announcem
             ) : (
               <div className="space-y-4">
                 {announcements.map((announcement) => (
-                  <div key={announcement.id} className="border-l-4 border-blue-500 pl-4 py-2 bg-gray-50 rounded-r-lg">
+                  <div
+                    key={announcement.id}
+                    className="border-l-4 border-blue-500 pl-4 py-2 bg-gray-50 rounded-r-lg"
+                  >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <h3 className="font-semibold text-lg text-gray-900">

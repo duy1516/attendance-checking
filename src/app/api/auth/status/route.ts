@@ -39,7 +39,7 @@ app.get("/api/auth/status", async (c) => {
       isAuthenticated: true,
       user: user[0],
     });
-  } catch (err) {
+  } catch {
     return c.json({ isAuthenticated: false });
   }
 });
