@@ -8,7 +8,7 @@ import { users, attendanceRecords, attendanceSessions } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 
 const app = new Hono().basePath('/api/face-recognition/face-scan');
-const FASTAPI_BASE = 'http://127.0.0.1:8000';
+const FASTAPI_BASE = 'https://face-regognition-api.onrender.com';
 const JWT_SECRET = process.env.JWT_SECRET!;
 
 app.post('/', async (c) => {
