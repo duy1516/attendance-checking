@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
         title: announcements.title,
         message: announcements.message,
         createdAt: announcements.createdAt,
-        teacherName: users.name, // Assuming users table has a 'name' field
+        teacherName: users.name,
       })
       .from(announcements)
       .leftJoin(users, eq(announcements.teacherId, users.id))
@@ -147,41 +147,6 @@ export async function PUT(request: NextRequest) {
     console.error("Error updating announcement:", error);
     return NextResponse.json(
       { error: "Failed to update announcement" },
-      { status: 500 }
-    );
-  }
-}
-
-// DELETE /api/announcements/{id} - Optional: Delete announcement
-export async function DELETE(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
-
-    if (!id) {
-      return NextResponse.json(
-        { error: "Announcement ID is required" },
-        { status: 400 }
-      );
-    }
-
-    const result = await db
-      .delete(announcements)
-      .where(eq(announcements.id, id))
-      .returning();
-
-    if (result.length === 0) {
-      return NextResponse.json(
-        { error: "Announcement not found" },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json({ message: "Announcement deleted successfully" });
-  } catch (error) {
-    console.error("Error deleting announcement:", error);
-    return NextResponse.json(
-      { error: "Failed to delete announcement" },
       { status: 500 }
     );
   }
