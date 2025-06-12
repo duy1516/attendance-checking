@@ -4,8 +4,6 @@ import { db } from "@/db";
 import { announcements, users } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 
-export const runtime = 'edge';
-
 // GET /api/announcements?classId={classId}
 export async function GET(request: NextRequest) {
   try {
