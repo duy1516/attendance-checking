@@ -1,19 +1,24 @@
 // app/api/announcements/route.ts
-import { NextRequest, NextResponse } from "next/server";
+import { handle } from "hono/vercel";
+import { Hono } from "hono";
+import { getCookie } from "hono/cookie";
+import { verify } from "jsonwebtoken";
 import { db } from "@/db";
 import { announcements, users } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 
+const app = new Hono();
+const JWT_SECRET = process.env.JWT_SECRET || "your_fallback_secret";
+
 // GET /api/announcements?classId={classId}
-export async function GET(request: NextRequest) {
+app.get("/api/announcements", async (c) => {
   try {
-    const { searchParams } = new URL(request.url);
-    const classId = searchParams.get('classId');
+    const classId = c.req.query('classId');
 
     if (!classId) {
-      return NextResponse.json(
+      return c.json(
         { error: "classId parameter is required" },
-        { status: 400 }
+        400
       );
     }
 
@@ -33,36 +38,36 @@ export async function GET(request: NextRequest) {
       .where(eq(announcements.classId, classId))
       .orderBy(desc(announcements.createdAt));
 
-    return NextResponse.json(results);
+    return c.json(results);
   } catch (error) {
     console.error("Error fetching announcements:", error);
-    return NextResponse.json(
+    return c.json(
       { error: "Failed to fetch announcements" },
-      { status: 500 }
+      500
     );
   }
-}
+});
 
 // POST /api/announcements
-export async function POST(request: NextRequest) {
+app.post("/api/announcements", async (c) => {
   try {
-    const body = await request.json();
+    const body = await c.req.json();
 
     // Validate required fields
     const { classId, teacherId, title } = body;
 
     if (!classId || !teacherId || !title) {
-      return NextResponse.json(
+      return c.json(
         { error: "classId, teacherId, and title are required" },
-        { status: 400 }
+        400
       );
     }
 
     // Validate title length
     if (title.trim().length === 0) {
-      return NextResponse.json(
+      return c.json(
         { error: "Title cannot be empty" },
-        { status: 400 }
+        400
       );
     }
 
@@ -93,36 +98,35 @@ export async function POST(request: NextRequest) {
       .where(eq(announcements.id, result[0].id))
       .limit(1);
 
-    return NextResponse.json(createdAnnouncement[0], { status: 201 });
+    return c.json(createdAnnouncement[0], 201);
   } catch (error) {
     console.error("Error creating announcement:", error);
-    return NextResponse.json(
+    return c.json(
       { error: "Failed to create announcement" },
-      { status: 500 }
+      500
     );
   }
-}
+});
 
-// PUT /api/announcements/{id} - Optional: Update announcement
-export async function PUT(request: NextRequest) {
+// PUT /api/announcements?id={id}
+app.put("/api/announcements", async (c) => {
   try {
-    const body = await request.json();
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
+    const body = await c.req.json();
+    const id = c.req.query('id');
 
     if (!id) {
-      return NextResponse.json(
+      return c.json(
         { error: "Announcement ID is required" },
-        { status: 400 }
+        400
       );
     }
 
     const { title, message } = body;
 
     if (!title || title.trim().length === 0) {
-      return NextResponse.json(
+      return c.json(
         { error: "Title is required and cannot be empty" },
-        { status: 400 }
+        400
       );
     }
 
@@ -136,18 +140,76 @@ export async function PUT(request: NextRequest) {
       .returning();
 
     if (result.length === 0) {
-      return NextResponse.json(
+      return c.json(
         { error: "Announcement not found" },
-        { status: 404 }
+        404
       );
     }
 
-    return NextResponse.json(result[0]);
+    return c.json(result[0]);
   } catch (error) {
     console.error("Error updating announcement:", error);
-    return NextResponse.json(
+    return c.json(
       { error: "Failed to update announcement" },
-      { status: 500 }
+      500
     );
   }
-}
+});
+
+// DELETE /api/announcements?id={id}
+app.delete("/api/announcements", async (c) => {
+  try {
+    // Check authentication
+    const token = getCookie(c, "authToken");
+
+    if (!token) {
+      return c.json({ error: "Unauthorized" }, 401);
+    }
+
+    let decoded;
+    try {
+      decoded = verify(token, JWT_SECRET) as { id: string; role: string };
+    } catch {
+      return c.json({ error: "Invalid token" }, 401);
+    }
+
+    // Check if user is a teacher
+    if (decoded.role !== "teacher") {
+      return c.json({ error: "Only teachers can delete announcements" }, 403);
+    }
+
+    const id = c.req.query('id');
+
+    if (!id) {
+      return c.json(
+        { error: "Announcement ID is required" },
+        400
+      );
+    }
+
+    const result = await db
+      .delete(announcements)
+      .where(eq(announcements.id, id))
+      .returning();
+
+    if (result.length === 0) {
+      return c.json(
+        { error: "Announcement not found" },
+        404
+      );
+    }
+
+    return c.json({ success: true, deleted: result[0] });
+  } catch (error) {
+    console.error("Error deleting announcement:", error);
+    return c.json(
+      { error: "Failed to delete announcement" },
+      500
+    );
+  }
+});
+
+export const GET = handle(app);
+export const POST = handle(app);
+export const PUT = handle(app);
+export const DELETE = handle(app);

@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { SquarePenIcon, CalendarIcon, UserIcon } from "lucide-react";
+import { SquarePenIcon, CalendarIcon, UserIcon, Trash2Icon } from "lucide-react";
 
 interface Announcement {
   id: string;
@@ -100,6 +100,22 @@ export const AnnouncementTable = ({ classId, teacherId, teacherName }: Announcem
       }
     } catch (error) {
       console.error("Error creating announcement:", error);
+    }
+  };
+
+  const deleteAnnouncement = async (announcementId: string) => {
+    if (!confirm("Are you sure you want to delete this announcement?")) return;
+
+    try {
+      const response = await fetch(`/api/announcements?id=${announcementId}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        await refetch(); // Refresh list after deletion
+      }
+    } catch (error) {
+      console.error("Error deleting announcement:", error);
     }
   };
 
@@ -213,6 +229,16 @@ export const AnnouncementTable = ({ classId, teacherId, teacherName }: Announcem
                           </div>
                         </div>
                       </div>
+                      {isTeacher && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => deleteAnnouncement(announcement.id)}
+                          className="ml-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                        >
+                          <Trash2Icon className="w-4 h-4" />
+                        </Button>
+                      )}
                     </div>
                   </div>
                 ))}
