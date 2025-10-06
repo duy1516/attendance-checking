@@ -60,10 +60,10 @@ export const AttendanceRecord = ({ classId }: { classId: string }) => {
   };
 
   return (
-    <div className="m-4">
-      <div className="w-auto min-h-[250px] bg-white border border-[#D9D9D9] rounded-lg shadow-md p-4 md:w-[350px]">
+    <div className="mx-2">
+      <div className="w-auto min-h-[250px] bg-white border border-[#D9D9D9] rounded-lg shadow-md p-2 md:w-[350px]">
         <div className="flex items-center justify-between">
-          <h1 className="font-bold text-2xl">Sessions</h1>
+          <h1 className="font-bold text-xl mx-1">Sessions</h1>
           <div className="flex items-center gap-2">
             <FaceScanner classId={classId} />
             {activeSessionId ? (
@@ -82,11 +82,11 @@ export const AttendanceRecord = ({ classId }: { classId: string }) => {
         <Separator />
 
         {/* Sessions List */}
-        <div className="mt-4">
+        <div className="mt-4 ">
           {sessionsLoading ? (
             <p className="text-sm text-gray-500">Loading sessions...</p>
           ) : sessionsData?.sessions?.length > 0 ? (
-            <div className="space-y-2 max-h-[150px] overflow-y-auto">
+            <div className="space-y-2 max-h-[175px] overflow-y-auto">
               {sessionsData.sessions.map((session: { id: string; name: string; sessionDate: string; status: string }) => (
                 <div
                   key={session.id}

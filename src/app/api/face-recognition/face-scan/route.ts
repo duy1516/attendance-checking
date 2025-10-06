@@ -8,7 +8,7 @@ import { users, attendanceRecords, attendanceSessions } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 
 const app = new Hono().basePath('/api/face-recognition/face-scan');
-const FASTAPI_BASE = 'https://face-regognition-api.onrender.com';
+const FASTAPI_BASE = 'http://127.0.0.1:8000';
 const JWT_SECRET = process.env.JWT_SECRET!;
 
 app.post('/', async (c) => {
@@ -92,7 +92,7 @@ app.post('/', async (c) => {
     }, 409);
   }
 
-  // Step 5: Process the image (your existing face recognition code)
+  // Step 5: Process the image 
   const file = body.image as File
 
   if (!file) throw new HTTPException(400, { message: 'No image file provided' })

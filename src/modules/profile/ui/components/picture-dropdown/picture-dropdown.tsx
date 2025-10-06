@@ -55,6 +55,7 @@ export function PictureDropdown() {
         <>
           <div className="px-2 mb-4">
             <UploadForm userId={user?.id || ''} />
+            <p className="px-4 text-black opacity-50 text-xs font-medium">Please upload images of various angle and lighting to improve recognition accuracy</p>
           </div>
           <UserImagesGallery />
         </>

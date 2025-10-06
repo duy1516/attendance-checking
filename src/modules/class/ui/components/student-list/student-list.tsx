@@ -126,7 +126,7 @@ export const StudentList = ({ classId }: StudentListProps) => {
 
   return (
     <div className="bg-white border border-[#D9D9D9] rounded-lg shadow-md p-4">
-      <h2 className="text-lg font-semibold mb-3">Enrolled Students</h2>
+      <h2 className="font-bold text-xl mx-1">Enrolled Students</h2>
       {sessions.length === 0 && (
         <p className="text-sm text-gray-500 mt-4 text-center italic">
           No attendance sessions found for this class.
@@ -137,16 +137,16 @@ export const StudentList = ({ classId }: StudentListProps) => {
           <table className="w-full border-collapse">
             <thead>
               <tr className="border-b">
-                <th className="sticky left-0 z-10 bg-white text-left py-3 px-4 font-semibold text-gray-700 min-w-[200px] border-r border-gray-200">
+                <th className="sticky left-0 z-10 bg-white text-left py-3 px-4 font-semibold text-black min-w-[200px] border-r border-gray-200">
                   Student Info
                 </th>
                 {sessionsData.sessions.map((session: { id: string; sessionDate: string }) => (
-                  <th key={session.id} className="text-center py-3 px-4 font-semibold text-gray-700 min-w-[120px]">
+                  <th key={session.id} className="text-center py-3 px-4 font-semibold text-black min-w-[120px]">
                     {new Date(session.sessionDate).toLocaleDateString('en-GB')}
                   </th>
                 ))}
                 {userRole === "teacher" && (
-                  <th className="sticky right-0 z-10 bg-white text-center py-3 px-4 font-semibold text-gray-700 min-w-[100px] border-l border-gray-200">
+                  <th className="sticky right-0 z-10 bg-white text-center py-3 px-4 font-semibold text-black min-w-[100px] border-l border-gray-200">
                     Actions
                   </th>
                 )}
@@ -180,7 +180,7 @@ export const StudentList = ({ classId }: StudentListProps) => {
                             )}
                           </div>
                         ) : (
-                          <span className="px-2 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">Absent</span>
+                          <span className="px-2 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">absent</span>
                         )}
                       </td>
                     );

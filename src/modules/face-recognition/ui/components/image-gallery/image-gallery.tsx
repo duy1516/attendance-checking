@@ -95,9 +95,6 @@ const UserImagesGallery = () => {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Your Image Gallery</h1>
-          <p className="text-gray-600 mt-1">
-            {stats.successful_loads} of {stats.total_images} images loaded successfully
-          </p>
         </div>
         <Button
           onClick={() => refetch()}
@@ -153,8 +150,8 @@ const UserImagesGallery = () => {
                       : image.src
                   }
                   alt={`Face recognition image ${image.id}`}
-                  width={200} // replace with actual width
-                  height={200} // replace with actual height
+                  width={160}
+                  height={160}
                   className="w-full h-full object-cover"
                   loading="lazy"
                   unoptimized

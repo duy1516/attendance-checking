@@ -71,7 +71,7 @@ export function UploadForm({ userId }: UploadFormProps) {
     <div>
       <label
         htmlFor="file-upload"
-        className="cursor-pointer inline-flex items-center justify-center px-4 py-2 text-black opacity-50 text-sm font-medium rounded hover:opacity-100 transition-opacity duration-200"
+        className="cursor-pointer inline-flex items-center justify-center px-4 py-2 text-black opacity-50 text-sm font-medium underline hover:opacity-100 transition-opacity duration-200"
       >
         Add pictures +
       </label>

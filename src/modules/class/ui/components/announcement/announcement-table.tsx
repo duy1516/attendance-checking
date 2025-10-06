@@ -21,7 +21,7 @@ interface Announcement {
   teacherId: string;
   title: string;
   message: string | null;
-  createdAt: Date;
+  createdAt: string;
   teacherName?: string;
 }
 
@@ -103,9 +103,8 @@ export const AnnouncementTable = ({ classId, teacherId, teacherName }: Announcem
     }
   };
 
-  const formatDate = (dateString: Date) => {
+  const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
-      timeZone: "Asia/Ho_Chi_Minh",
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -116,10 +115,10 @@ export const AnnouncementTable = ({ classId, teacherId, teacherName }: Announcem
 
   return (
     <div className="flex-1">
-      <div className="m-4">
-        <div className="min-h-[250px] bg-white border border-[#D9D9D9] rounded-lg shadow-md p-4">
+      <div className="mx-2">
+        <div className="min-h-[250px] bg-white border border-[#D9D9D9] rounded-lg shadow-md p-2">
           <div className="flex items-center justify-between">
-            <h1 className="font-bold text-2xl">Announcements</h1>
+            <h1 className="font-bold text-xl mx-1">Announcements</h1>
             {isTeacher && (
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
@@ -178,7 +177,7 @@ export const AnnouncementTable = ({ classId, teacherId, teacherName }: Announcem
           </div>
           <Separator />
 
-          <div className="mt-4 max-h-[150px] overflow-y-auto">
+          <div className="mt-4 max-h-[175px] overflow-y-auto">
             {isLoading ? (
               <div className="flex justify-center items-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>

@@ -74,7 +74,7 @@ export const LeaveClassButton = ({ classId }: { classId: string }) => {
   if (isLoading || isError || !user || user.role !== "student") return null;
 
   return (
-    <div className="mx-4 my-2">
+    <div className="m-2">
       <Button
         variant="destructive"
         size="sm"

@@ -30,7 +30,7 @@ app.post('/api/face-recognition/user-link', async (c) => {
     }
 
     // Forward to FastAPI - it will handle creating API user and linking
-    const fastapiUrl = 'https://face-regognition-api.onrender.com/user/link-user';
+    const fastapiUrl = 'http://127.0.0.1:8000/user/link-user';
 
     const response = await fetch(fastapiUrl, {
       method: 'POST',

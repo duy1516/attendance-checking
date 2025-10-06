@@ -7,7 +7,7 @@ import { verify } from 'jsonwebtoken';
 const app = new Hono().basePath('/api/face-recognition/upload');
 
 const JWT_SECRET = process.env.JWT_SECRET!;
-const FASTAPI_BASE = 'https://face-regognition-api.onrender.com';
+const FASTAPI_BASE = 'http://127.0.0.1:8000';
 
 app.post('/', async (c) => {
   try {
