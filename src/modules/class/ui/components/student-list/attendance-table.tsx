@@ -28,6 +28,8 @@ type AttendanceTableProps = {
   userRole: "teacher" | "student" | null;
   onDelete?: (studentId: string) => void;
   isDeleting?: boolean;
+  onToggleAttendance?: (studentId: string, sessionId: string, newStatus: "present" | "absent") => void;
+  isTogglingAttendance?: boolean;
 };
 
 export const AttendanceTable = ({
@@ -37,6 +39,8 @@ export const AttendanceTable = ({
   userRole,
   onDelete,
   isDeleting,
+  onToggleAttendance,
+  isTogglingAttendance,
 }: AttendanceTableProps) => {
   const getAttendanceRecord = (studentId: string, sessionId: string) => {
     return attendanceData?.find(
@@ -132,13 +136,24 @@ export const AttendanceTable = ({
                         student.id,
                         session.id
                       );
+                      const isPresent = !!record;
                       return (
                         <td key={session.id} className="py-3 px-6 text-center">
                           {record ? (
                             <div className="flex flex-col items-center gap-1">
-                              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-green-100">
+                              <button
+                                onClick={() => {
+                                  if (userRole === "teacher" && onToggleAttendance) {
+                                    onToggleAttendance(student.id, session.id, "absent");
+                                  }
+                                }}
+                                disabled={userRole !== "teacher" || isTogglingAttendance}
+                                className={`flex items-center justify-center w-8 h-8 rounded-full bg-green-100 ${
+                                  userRole === "teacher" ? "cursor-pointer hover:bg-green-200 transition-colors" : ""
+                                } disabled:opacity-50 disabled:cursor-not-allowed`}
+                              >
                                 <Check className="w-5 h-5 text-green-600" />
-                              </div>
+                              </button>
                               <span className="text-xs text-gray-500">
                                 {new Date(record.scannedAt).toLocaleTimeString(
                                   [],
@@ -150,9 +165,19 @@ export const AttendanceTable = ({
                               </span>
                             </div>
                           ) : (
-                            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-red-100 mx-auto">
+                            <button
+                              onClick={() => {
+                                if (userRole === "teacher" && onToggleAttendance) {
+                                  onToggleAttendance(student.id, session.id, "present");
+                                }
+                              }}
+                              disabled={userRole !== "teacher" || isTogglingAttendance}
+                              className={`flex items-center justify-center w-8 h-8 rounded-full bg-red-100 mx-auto ${
+                                userRole === "teacher" ? "cursor-pointer hover:bg-red-200 transition-colors" : ""
+                              } disabled:opacity-50 disabled:cursor-not-allowed`}
+                            >
                               <X className="w-5 h-5 text-red-600" />
-                            </div>
+                            </button>
                           )}
                         </td>
                       );

@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { AttendanceTable } from "../student-list/attendance-table";
 import { Filters } from "../student-list/filters";
+import { AttendanceConfirmModal } from "../student-list/attendance-confirm-modal";
 
 type Student = {
   id: string;
@@ -31,6 +32,21 @@ export const TeacherDashboard = ({ classId }: TeacherDashboardProps) => {
   const queryClient = useQueryClient();
   const [selectedSessionId, setSelectedSessionId] = useState<string | "all">("all");
   const [statusFilter, setStatusFilter] = useState<"all" | "present" | "absent">("all");
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    studentId: string;
+    sessionId: string;
+    newStatus: "present" | "absent";
+    studentName: string;
+    sessionDate: string;
+  }>({
+    isOpen: false,
+    studentId: "",
+    sessionId: "",
+    newStatus: "present",
+    studentName: "",
+    sessionDate: "",
+  });
 
   // Fetch enrolled students
   const {
@@ -94,6 +110,63 @@ export const TeacherDashboard = ({ classId }: TeacherDashboardProps) => {
   const handleDelete = (studentId: string) => {
     const confirmDelete = window.confirm("Are you sure you want to remove this student?");
     if (confirmDelete) deleteMutation.mutate(studentId);
+  };
+
+  // Toggle attendance mutation
+  const toggleAttendanceMutation = useMutation({
+    mutationFn: async ({
+      studentId,
+      sessionId,
+      newStatus
+    }: {
+      studentId: string;
+      sessionId: string;
+      newStatus: "present" | "absent"
+    }) => {
+      const res = await fetch("/api/attendance/update", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ studentId, sessionId, status: newStatus }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to update attendance");
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["attendance", classId] });
+    },
+  });
+
+  const handleToggleAttendance = (
+    studentId: string,
+    sessionId: string,
+    newStatus: "present" | "absent"
+  ) => {
+    const student = studentsData?.find(s => s.id === studentId);
+    const session = sessions.find((s: Session) => s.id === sessionId);
+    const sessionDate = session ? new Date(session.sessionDate).toLocaleDateString("en-GB") : "";
+
+    setConfirmModal({
+      isOpen: true,
+      studentId,
+      sessionId,
+      newStatus,
+      studentName: student?.name || "this student",
+      sessionDate,
+    });
+  };
+
+  const handleConfirmAttendance = () => {
+    toggleAttendanceMutation.mutate({
+      studentId: confirmModal.studentId,
+      sessionId: confirmModal.sessionId,
+      newStatus: confirmModal.newStatus,
+    });
+    setConfirmModal({ ...confirmModal, isOpen: false });
+  };
+
+  const handleCloseModal = () => {
+    setConfirmModal({ ...confirmModal, isOpen: false });
   };
 
   // Helper function to get attendance record for a specific student and session
@@ -186,6 +259,18 @@ export const TeacherDashboard = ({ classId }: TeacherDashboardProps) => {
         userRole="teacher"
         onDelete={handleDelete}
         isDeleting={deleteMutation.isPending}
+        onToggleAttendance={handleToggleAttendance}
+        isTogglingAttendance={toggleAttendanceMutation.isPending}
+      />
+
+      <AttendanceConfirmModal
+        isOpen={confirmModal.isOpen}
+        onClose={handleCloseModal}
+        onConfirm={handleConfirmAttendance}
+        studentName={confirmModal.studentName}
+        sessionDate={confirmModal.sessionDate}
+        newStatus={confirmModal.newStatus}
+        isLoading={toggleAttendanceMutation.isPending}
       />
     </div>
   );
